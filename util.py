@@ -39,7 +39,9 @@ def load_saved_artifacts():
         with open(os.path.join(BASE_DIR, "artifacts", "bangalore_house_prices_model.pickle"), "rb") as f:
             __model = pickle.load(f)
 
+    # ✅ Print locations for debugging
     print("Artifacts loaded successfully!")
+    print("Locations loaded:", __locations)
 
 def get_location_names():
     """Return all locations"""
