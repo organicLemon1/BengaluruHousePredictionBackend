@@ -9,6 +9,9 @@ __model = None
 
 def get_estimated_price(location, sqft, bhk, bath):
     """Return estimated price for given features"""
+    if __data_columns is None or __model is None:
+        raise Exception("Artifacts not loaded! Call load_saved_artifacts() first.")
+
     try:
         loc_index = __data_columns.index(location.lower())
     except ValueError:
@@ -30,22 +33,26 @@ def load_saved_artifacts():
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
     # Load column info
-    with open(os.path.join(BASE_DIR, "artifacts", "columns.json"), "r") as f:
+    columns_path = os.path.join(BASE_DIR, "artifacts", "columns.json")
+    with open(columns_path, "r") as f:
         __data_columns = json.load(f)['data_columns']
         __locations = __data_columns[3:]  # first 3 columns are sqft, bath, bhk
 
     # Load trained model
     if __model is None:
-        with open(os.path.join(BASE_DIR, "artifacts", "bangalore_house_prices_model.pickle"), "rb") as f:
+        model_path = os.path.join(BASE_DIR, "artifacts", "bangalore_house_prices_model.pickle")
+        with open(model_path, "rb") as f:
             __model = pickle.load(f)
 
     # ✅ Print locations for debugging
     print("Artifacts loaded successfully!")
-    print("Locations loaded:", __locations)
+    print(f"Total locations loaded: {len(__locations)}")
+    print("Locations:", __locations)
 
 def get_location_names():
     """Return all locations"""
     if __locations is None:
+        print("Warning: Artifacts not loaded yet!")
         return []
     return __locations
 
@@ -53,10 +60,10 @@ def get_data_columns():
     """Return all column names"""
     return __data_columns
 
+
 # For testing locally
 if __name__ == '__main__':
     load_saved_artifacts()
-    print("Locations:", get_location_names())
     print("Sample predictions:")
     print(get_estimated_price('1st Phase JP Nagar', 1000, 3, 3))
     print(get_estimated_price('Ejipura', 1000, 2, 2))
