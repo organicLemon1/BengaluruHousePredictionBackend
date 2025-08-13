@@ -1,7 +1,4 @@
 flask
 numpy
-pandas
-pickle
-json
 scikit-learn
 gunicorn
